@@ -42,6 +42,10 @@ local function find_jump_points(forward, jump_table)
         count = tostring(count_i)
     end
 
+    if (forward == false and current_col == 1) then
+        count = ' '
+    end
+
     table.insert(jump_table, {
       line = current_row - 1,
       pos = current_col - 1,
