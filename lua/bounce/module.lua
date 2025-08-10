@@ -1,5 +1,6 @@
 ---@class Bounce
 local M = {}
+local strFuncs = require("bounce.utf8-support").stringFuncs
 
 local marks = {}
 local update_timer = vim.loop.new_timer()
@@ -17,16 +18,21 @@ local function find_jump_points(forward, jump_table)
       vim.api.nvim_command("norm b")
     end
     local current_row, current_col = unpack(vim.api.nvim_win_get_cursor(0))
-    if current_row ~= row or current_col >= string.len(line) or string.len(line) == 0 then
+    current_col = strFuncs.posOffset(line, current_col)
+    if current_row ~= row or current_col >= strFuncs.len(line) or strFuncs.len(line) == 0 then
       break
     end
     if not config.more_jumps and word_count > 9 then
       break
     end
-    if #jump_table > 0 and jump_table[#jump_table].pos == current_col then
-      break
+
+    if word_count > 99 then
+        break
     end
 
+    if #jump_table > 0 and jump_table[#jump_table].pos == current_col - 1 then
+      break
+    end
 
     local count = ''
     local count_i = word_count % 10
@@ -38,8 +44,8 @@ local function find_jump_points(forward, jump_table)
 
     table.insert(jump_table, {
       line = current_row - 1,
-      pos = current_col,
-      char = line:sub(current_col + 1, current_col + 1),
+      pos = current_col - 1,
+      char = strFuncs.sub(line, current_col, current_col),
       count = count,
     })
     word_count = word_count + 1
@@ -49,7 +55,7 @@ local function find_jump_points(forward, jump_table)
 end
 
 local function replace_char(str, n, ch)
-  return string.sub(str, 0, n) .. ch .. string.sub(str, n + 2, string.len(str))
+  return strFuncs.sub(str, 0, n) .. ch .. strFuncs.sub(str, n + 2, strFuncs.len(str))
 end
 
 local function sort_by_pos(a, b)
@@ -62,8 +68,7 @@ local function assemble_virtual_line(jump_table)
   local line_table = {}
   table.sort(jump_table, sort_by_pos)
   local n = 0
-  local line = string.rep(" ", max_width)
-  local extended_line = string.rep(" ", string.len(vim.api.nvim_get_current_line()))
+  local extended_line = string.rep(" ", strFuncs.len(vim.api.nvim_get_current_line()))
   if #jump_table > 0 then
     for i = 1, #jump_table do
       extended_line = replace_char(extended_line, jump_table[i].pos, jump_table[i].count)
@@ -74,15 +79,15 @@ local function assemble_virtual_line(jump_table)
       if n > 0 then
         cut_end = cut_end - jump_table[1].pos
       end
-      if cut_end > string.len(extended_line) then
-        cut_end = string.len(extended_line)
+      if cut_end > strFuncs.len(extended_line) then
+        cut_end = strFuncs.len(extended_line)
       end
-      local cut_line = string.sub(extended_line, cut_start, cut_end)
+      local cut_line = strFuncs.sub(extended_line, cut_start, cut_end)
       if n > 0 then
         cut_line = string.rep(" ", jump_table[1].pos) .. cut_line
       end
       table.insert(line_table, cut_line)
-      if max_width * (n + 1) > string.len(extended_line) then
+      if max_width * (n + 1) > strFuncs.len(extended_line) then
         break
       end
       n = n + 1
