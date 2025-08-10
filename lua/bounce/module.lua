@@ -26,11 +26,21 @@ local function find_jump_points(forward, jump_table)
     if #jump_table > 0 and jump_table[#jump_table].pos == current_col then
       break
     end
+
+
+    local count = ''
+    local count_i = word_count % 10
+    if word_count < 3 then
+        count = ' '
+    else
+        count = tostring(count_i)
+    end
+
     table.insert(jump_table, {
       line = current_row - 1,
       pos = current_col,
       char = line:sub(current_col + 1, current_col + 1),
-      count = word_count % 10,
+      count = count,
     })
     word_count = word_count + 1
   end
