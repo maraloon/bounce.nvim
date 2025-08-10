@@ -6,3 +6,4 @@ it's a fork of [original plugin](https://github.com/R1PeR/bounce.nvim) with:
 - don't show hints if:
     - it is 1-2 jumps
     - it is begining of line
+- fix false positions in strings with tab symbols 

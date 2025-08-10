@@ -23,9 +23,13 @@ else
 	end
 	M.stringFuncs.posOffset = function(s, col)
 		local offset = 1
-		for p, _ in utf8.codes(s) do
+		for p, v in utf8.codes(s) do
 			if p > col then break end
-			offset = offset + 1
+            if v == 9 then -- tab
+                offset = offset + 4
+            else
+                offset = offset + 1
+            end
 		end
 		return offset
 	end
