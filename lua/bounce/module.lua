@@ -1,3 +1,8 @@
+require "logging.file"
+local logger = logging.file {
+    filename = "debug.log",
+}
+
 ---@class Bounce
 local M = {}
 local strFuncs = require("bounce.utf8-support").stringFuncs
@@ -102,6 +107,11 @@ local function assemble_virtual_line(jump_table)
 end
 
 local function update_word_buffer()
+  for i = 1, #marks do
+    vim.api.nvim_buf_del_extmark(0, namespace, marks[i])
+  end
+  marks = {}
+
   local temp_words = {}
   find_jump_points(true, temp_words)
   local forward_count = #temp_words
@@ -126,6 +136,7 @@ local function update_word_buffer()
     end
   elseif config.display_mode == "virtual_line" then
     local lines = assemble_virtual_line(temp_words)
+    logger:debug(#lines)
     if #lines > 0 then
       for i = 1, #lines do
         local mark = vim.api.nvim_buf_set_extmark(0, namespace, temp_words[1].line, i, {
@@ -147,8 +158,9 @@ local function hide_word_numbers()
 end
 
 local function show_word_numbers()
-  hide_word_numbers()
-  update_timer:start(config.delay_time, 0, vim.schedule_wrap(update_word_buffer))
+  -- hide_word_numbers()
+  -- update_timer:start(config.delay_time, 0, vim.schedule_wrap(update_word_buffer))
+  update_word_buffer()
 end
 
 local function setup(user_config)
