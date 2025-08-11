@@ -150,7 +150,6 @@ local function update_word_buffer()
 end
 
 local function hide_word_numbers()
-  update_timer:stop()
   for i = 1, #marks do
     vim.api.nvim_buf_del_extmark(0, namespace, marks[i])
   end
@@ -167,7 +166,7 @@ local function setup(user_config)
   config = vim.tbl_deep_extend("force", config, user_config or {})
   vim.api.nvim_create_autocmd({ "CursorMoved" }, { callback = show_word_numbers })
   vim.api.nvim_create_autocmd(
-    { "ModeChanged", "CmdlineEnter", "WinResized", "VimResized" },
+    { "ModeChanged", "CmdlineEnter", "WinResized", "VimResized", "BufEnter", "BufLeave" },
     { callback = hide_word_numbers }
   )
 
