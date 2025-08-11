@@ -170,6 +170,11 @@ local function setup(user_config)
     { "ModeChanged", "CmdlineEnter", "WinResized", "VimResized" },
     { callback = hide_word_numbers }
   )
+
+  vim.api.nvim_create_autocmd("ModeChanged", {
+        pattern = { "*:[n\x16]*" }, -- back to normal mode
+        callback = show_word_numbers,
+  })
 end
 
 M = {
