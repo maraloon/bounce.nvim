@@ -1,14 +1,13 @@
-require "logging.file"
-local logger = logging.file {
-    filename = "debug.log",
-}
+-- require "logging.file"
+-- local logger = logging.file {
+--     filename = "debug.log",
+-- }
 
 ---@class Bounce
 local M = {}
 local strFuncs = require("bounce.utf8-support").stringFuncs
 
 local marks = {}
-local update_timer = vim.loop.new_timer()
 local namespace = vim.api.nvim_create_namespace("bounce")
 local config = { highlight_group_name = "@text.todo", delay_time = 1000, more_jumps = false, display_mode = "overlay" }
 
@@ -42,7 +41,7 @@ local function find_jump_points(forward, jump_table)
     local count = ''
     local count_i = word_count % 10
     if word_count < 3 then
-        count = ' '
+        count = '‾'
     else
         count = tostring(count_i)
     end
@@ -136,7 +135,6 @@ local function update_word_buffer()
     end
   elseif config.display_mode == "virtual_line" then
     local lines = assemble_virtual_line(temp_words)
-    logger:debug(#lines)
     if #lines > 0 then
       for i = 1, #lines do
         local mark = vim.api.nvim_buf_set_extmark(0, namespace, temp_words[1].line, i, {
