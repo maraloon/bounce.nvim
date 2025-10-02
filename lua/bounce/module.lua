@@ -144,6 +144,7 @@ local function hide_word_numbers()
 end
 
 local function show_word_numbers()
+  -- TODO: plugin must be ignored in Telescope 
   -- hide_word_numbers()
   -- update_timer:start(config.delay_time, 0, vim.schedule_wrap(update_word_buffer))
   update_word_buffer()
