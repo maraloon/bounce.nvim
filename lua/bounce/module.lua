@@ -162,16 +162,16 @@ end
 
 local function setup(user_config)
   config = vim.tbl_deep_extend("force", config, user_config or {})
-  vim.api.nvim_create_autocmd({ "CursorMoved" }, { callback = show_word_numbers })
-  vim.api.nvim_create_autocmd(
-    { "ModeChanged", "CmdlineEnter", "WinResized", "VimResized", "BufEnter", "BufLeave" },
-    { callback = hide_word_numbers }
-  )
-
-  vim.api.nvim_create_autocmd("ModeChanged", {
-        pattern = { "*:[n\x16]*" }, -- back to normal mode
-        callback = show_word_numbers,
-  })
+  -- vim.api.nvim_create_autocmd({ "CursorMoved" }, { callback = show_word_numbers })
+  -- vim.api.nvim_create_autocmd(
+  --   { "ModeChanged", "CmdlineEnter", "WinResized", "VimResized", "BufEnter", "BufLeave" },
+  --   { callback = hide_word_numbers }
+  -- )
+  --
+  -- vim.api.nvim_create_autocmd("ModeChanged", {
+  --       pattern = { "*:[n\x16]*" }, -- back to normal mode
+  --       callback = show_word_numbers,
+  -- })
 end
 
 M = {
