@@ -109,14 +109,7 @@ local function update_word_buffer()
 
   local temp_words = {}
   find_jump_points(true, temp_words)
-  local forward_count = #temp_words
   find_jump_points(false, temp_words)
-  local backward_count = #temp_words - forward_count
-
-  if forward_count < 3 and backward_count <= 3 then
-        return
-  end
-
   if config.display_mode == "overlay" then
     if #temp_words > 0 then
       for i = 1, #temp_words do
