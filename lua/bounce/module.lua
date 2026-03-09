@@ -71,32 +71,28 @@ local function assemble_virtual_line(jump_table)
   local max_width = win.width - win.textoff
   local line_table = {}
   table.sort(jump_table, sort_by_pos)
-  local n = 0
   if #jump_table > 0 then
-    local max_pos = jump_table[#jump_table].pos
-    local extended_line = string.rep(" ", max_pos + 1)
+    local last_visible = 0
     for i = 1, #jump_table do
-      extended_line = replace_char(extended_line, jump_table[i].pos, jump_table[i].count)
+      if jump_table[i].pos < max_width then
+        last_visible = i
+      end
     end
-    local cut_start = 0
-    while true do
-      local cut_end = max_width * (n + 1)
-      if n > 0 then
-        cut_end = cut_end - jump_table[1].pos
+    if last_visible > 0 then
+      local truncated_table = {}
+      for i = 1, last_visible do
+        table.insert(truncated_table, jump_table[i])
       end
-      if cut_end > strFuncs.len(extended_line) then
-        cut_end = strFuncs.len(extended_line)
+      local max_pos = truncated_table[#truncated_table].pos
+      local extended_line = string.rep(" ", max_pos + 1)
+      for i = 1, #truncated_table do
+        extended_line = replace_char(extended_line, truncated_table[i].pos, truncated_table[i].count)
       end
-      local cut_line = strFuncs.sub(extended_line, cut_start, cut_end)
-      if n > 0 then
-        cut_line = string.rep(" ", jump_table[1].pos) .. cut_line
+      local padding_len = max_width - strFuncs.len(extended_line)
+      if padding_len > 0 then
+        extended_line = extended_line .. string.rep(" ", padding_len)
       end
-      table.insert(line_table, cut_line)
-      if max_width * (n + 1) > strFuncs.len(extended_line) then
-        break
-      end
-      n = n + 1
-      cut_start = cut_end + 1
+      table.insert(line_table, extended_line)
     end
   end
   return line_table
