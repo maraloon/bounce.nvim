@@ -72,8 +72,9 @@ local function assemble_virtual_line(jump_table)
   local line_table = {}
   table.sort(jump_table, sort_by_pos)
   local n = 0
-  local extended_line = string.rep(" ", strFuncs.len(vim.api.nvim_get_current_line()))
   if #jump_table > 0 then
+    local max_pos = jump_table[#jump_table].pos
+    local extended_line = string.rep(" ", max_pos + 1)
     for i = 1, #jump_table do
       extended_line = replace_char(extended_line, jump_table[i].pos, jump_table[i].count)
     end
