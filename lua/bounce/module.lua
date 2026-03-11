@@ -40,8 +40,12 @@ local function find_jump_points(forward, jump_table)
 
     local count = ''
     local count_i = word_count % 10
-    if word_count < 3 then
-        count = '‾'
+    if word_count < 2 then
+        if forward then
+            count = 'w'
+        else
+            count = 'b'
+        end
     else
         count = tostring(count_i)
     end
