@@ -7,7 +7,6 @@
 local M = {}
 local strFuncs = require("bounce.utf8-support").stringFuncs
 
-local marks = {}
 local namespace = vim.api.nvim_create_namespace("bounce")
 local config = { highlight_group_name = "@text.todo", delay_time = 1000, more_jumps = false, display_mode = "overlay" }
 
@@ -102,11 +101,15 @@ local function assemble_virtual_line(jump_table)
   return line_table
 end
 
-local function update_word_buffer()
-  for i = 1, #marks do
-    vim.api.nvim_buf_del_extmark(0, namespace, marks[i])
+local function hide_word_numbers()
+  local all = vim.api.nvim_buf_get_extmarks(0, namespace, 0, -1, {})
+  for i = 1, #all do
+    vim.api.nvim_buf_del_extmark(0, namespace, all[i][1])
   end
-  marks = {}
+end
+
+local function update_word_buffer()
+  hide_word_numbers() 
 
   local temp_words = {}
   find_jump_points(true, temp_words)
@@ -120,7 +123,6 @@ local function update_word_buffer()
           virt_text_hide = true,
           hl_mode = "replace",
         })
-        table.insert(marks, mark)
       end
     end
   elseif config.display_mode == "virtual_line" then
@@ -131,23 +133,12 @@ local function update_word_buffer()
           hl_mode = "replace",
           virt_lines = { { { lines[i], config.highlight_group_name } } },
         })
-        table.insert(marks, mark)
       end
     end
   end
 end
 
-local function hide_word_numbers()
-  for i = 1, #marks do
-    vim.api.nvim_buf_del_extmark(0, namespace, marks[i])
-  end
-  marks = {}
-end
-
 local function show_word_numbers()
-  -- TODO: plugin must be ignored in Telescope 
-  -- hide_word_numbers()
-  -- update_timer:start(config.delay_time, 0, vim.schedule_wrap(update_word_buffer))
   update_word_buffer()
 end
 
